@@ -339,14 +339,13 @@ static ssize_t zone_set(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
-	stop_animation();
-	current_animation = ANIMATION_STATIC;
-
-	/* Store the new color as the original color */
 	int zone_idx = target_zone - zone_data;
 	original_colors[zone_idx].colors.red = target_zone->colors.red;
 	original_colors[zone_idx].colors.green = target_zone->colors.green;
 	original_colors[zone_idx].colors.blue = target_zone->colors.blue;
+
+	stop_animation();
+	current_animation = ANIMATION_STATIC;
 
 	target_zone->colors.red = (target_zone->colors.red * global_brightness) / 100;
 	target_zone->colors.green = (target_zone->colors.green * global_brightness) / 100;
