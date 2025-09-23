@@ -9,6 +9,7 @@ Inspired by the original [hp-omen-linux-module](https://github.com/pelrun/hp-ome
 - 4-Zone RGB Control - Individual control over each keyboard zone
 - All-Zone Control - Set all zones to the same color at once
 - Brightness Control - Adjust brightness from 0-100%
+- **10 Animation Modes** - Complete animation system with CPU-efficient timer-based updates
 - Real-time Updates - Changes apply immediately
 - Hex Color Format - Use standard RGB hex values
 
@@ -38,6 +39,25 @@ sudo make install
 ```
 
 The module will be built and installed using DKMS, which will automatically rebuild it on kernel updates.
+
+### Automatic Loading on Boot
+The driver is configured to load automatically on boot. If you need to set this up manually:
+
+```bash
+# Create modprobe configuration (for module options)
+sudo cp hp-wmi.conf /etc/modprobe.d/
+
+# Create systemd module loading configuration
+echo "hp-wmi" | sudo tee /etc/modules-load.d/hp-wmi.conf
+
+# Create state directory
+sudo mkdir -p /var/lib/omen-rgb-keyboard
+```
+
+Alternatively, use the provided installation script:
+```bash
+sudo ./install.sh
+```
 
 ## Usage
 
@@ -92,6 +112,12 @@ echo "0" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/brightness
 # Check current brightness
 cat /sys/devices/platform/omen-rgb-keyboard/rgb_zones/brightness
 
+# Check current animation mode
+cat /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+
+# Check current animation speed
+cat /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
 # Check current zone colors
 cat /sys/devices/platform/omen-rgb-keyboard/rgb_zones/zone00
 cat /sys/devices/platform/omen-rgb-keyboard/rgb_zones/zone01
@@ -114,6 +140,31 @@ Brightness is specified as a percentage (0-100):
 - `50` = 50% brightness
 - `100` = Maximum brightness
 
+### Animation Modes
+
+The driver supports 10 different animation modes:
+
+**Basic Modes:**
+- **static** - No animation, static colors (default)
+- **breathing** - Smooth breathing effect that fades in and out
+- **rainbow** - Rainbow wave that cycles through all colors
+- **wave** - Wave effect that moves across the zones
+- **pulse** - Pulsing effect with varying intensity
+
+**Advanced Modes:**
+- **chase** - Lights follow each other in sequence across zones
+- **sparkle** - Random sparkle effect with bright white flashes
+- **candle** - Warm flickering candle effect with orange/red colors
+- **aurora** - Aurora borealis effect with flowing green/blue waves
+- **disco** - Disco strobe effect with bright multi-colored flashes
+
+### Animation Speed
+
+Animation speed is controlled by a value from 1-10:
+- `1` = Slowest animation
+- `5` = Default speed
+- `10` = Fastest animation
+
 ## Examples
 
 ### Gaming Setup
@@ -135,6 +186,40 @@ echo "00FF00" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/zone0
 ```bash
 echo "FFFFFF" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/all
 echo "25" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/brightness
+```
+
+### Animation Examples
+```bash
+# Breathing red effect
+echo "FF0000" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/all
+echo "breathing" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "3" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Rainbow wave
+echo "rainbow" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "5" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Chase effect
+echo "00FF00" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/all
+echo "chase" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "4" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Sparkle effect
+echo "FFFFFF" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/all
+echo "sparkle" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "2" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Aurora effect (uses its own colors)
+echo "aurora" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "3" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Disco strobe effect
+echo "disco" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "6" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
+
+# Candle effect (uses its own warm colors)
+echo "candle" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_mode
+echo "4" | sudo tee /sys/devices/platform/omen-rgb-keyboard/rgb_zones/animation_speed
 ```
 
 ## Troubleshooting
@@ -167,6 +252,8 @@ ls -la /sys/devices/platform/omen-rgb-keyboard/rgb_zones/
 - Driver Name: `omen-rgb-keyboard`
 - WMI Interface: Uses HP's native WMI commands for maximum compatibility
 - Buffer Layout: Matches HP's Windows implementation exactly
+- Animation System: CPU-efficient timer-based updates with 20 FPS
+- State Persistence: Saves settings to `/var/lib/omen-rgb-keyboard/state`
 - Kernel Compatibility: Linux 5.0+
 
 ## License

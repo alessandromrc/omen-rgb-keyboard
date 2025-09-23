@@ -18,4 +18,4 @@ __section(".gnu.linkonce.this_module") = {
 MODULE_INFO(depends, "wmi");
 
 
-MODULE_INFO(srcversion, "25D21BEE5AD5C2D8061F0A1");
+MODULE_INFO(srcversion, "3ABF0DD20AA133DEA73529A");
