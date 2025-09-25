@@ -320,9 +320,9 @@ static ssize_t zone_show(struct device *dev, struct device_attribute *attr,
 	ret = fourzone_update_led(target_zone, HPWMI_READ);
 	if (ret)
 		return sprintf(buf, "red: -1, green: -1, blue: -1\n");
-	return sprintf(buf, "red: %d, green: %d, blue: %d\n",
-								 target_zone->colors.red,
-								 target_zone->colors.green, target_zone->colors.blue);
+	return sprintf(buf, "#%02x%02x%02x\n",
+							 target_zone->colors.red,
+							 target_zone->colors.green, target_zone->colors.blue);
 }
 
 static ssize_t zone_set(struct device *dev, struct device_attribute *attr,
@@ -833,9 +833,9 @@ static ssize_t all_show(struct device *dev, struct device_attribute *attr,
 	ret = fourzone_update_led(&zone_data[0], HPWMI_READ);
 	if (ret)
 		return sprintf(buf, "red: -1, green: -1, blue: -1\n");
-	return sprintf(buf, "red: %d, green: %d, blue: %d\n",
-								 zone_data[0].colors.red,
-								 zone_data[0].colors.green, zone_data[0].colors.blue);
+	return sprintf(buf, "#%02x%02x%02x\n",
+							 zone_data[0].colors.red,
+							 zone_data[0].colors.green, zone_data[0].colors.blue);
 }
 
 static ssize_t all_set(struct device *dev, struct device_attribute *attr,
